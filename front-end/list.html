@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <title>Listagem de Categorias - Web</title>
+</head>
+
+<body onload="list()">
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="create.html">Cadastro</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-12 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="h1 text-center">Tabela de Categorias</h1>
+                        <table class="table table-striped table-hover" id="table-list">
+                            <thead>
+                                <th scope="row">Nome da Categoria</th>
+                                <th scope="row">Departamento</th>
+                                <th scope="row">Data de Cadastro</th>
+                                <th scope="row">Ações</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.esm.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript">
+        function list(name, dateCreate, department, acept) {
+            //POST, PUT, GET, DELETE -> VERBOS HTTP
+            fetch("https://localhost:7006/categories", {
+                method: "GET",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then((response) => response.json())
+                .then((result) => {
+                    render(result);
+                })
+                .catch((error) => {
+                    Swal.fire(
+                        'Error 500',
+                        'Houve um erro ao listar as categorias!',
+                        'error'
+                    )
+                })
+        }
+
+        function render(categories) {
+            let table = document.querySelector("#table-list tbody");
+
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+
+            for (let categorie of categories) {
+                let line = `
+                    <tr>
+                        <td>${categorie.name}</td>
+                        <td>${categorie.department}</td>
+                        <td>${categorie.dateCreate}</td>
+                        <td><a href="javascript: deleteCategorie(${categorie.id});" class="btn btn-danger">Excluir</a></td>
+                    <tr>
+                `;
+                let tr = document.createElement("tr");
+                tr.innerHTML = line;
+                table.appendChild(tr);
+            }
+        }
+
+        function deleteCategorie(id) {
+            //POST, PUT, GET, DELETE -> VERBOS HTTP
+            fetch("https://localhost:7006/categories/"+id, {
+                method: "DELETE",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then((response) => response.json())
+                .then((result) => {
+                    list(result);
+                })
+                .catch((error) => {
+                    Swal.fire(
+                        'Error 500',
+                        'Houve um erro ao excluir a categoria!',
+                        'error'
+                    )
+                })
+        }
+    </script>
+</body>
+
+</html>

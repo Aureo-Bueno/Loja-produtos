@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <title>Cadastro - Web</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="list.html">Listagem</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <h1 class="h1 text-center mt-2">Cadastro</h1>
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <form onsubmit="return create()">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="name"
+                                    placeholder="Preencha o nome completo...">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dateCreate" class="form-label">Data Cadastro</label>
+                                <input type="date" class="form-control" id="dateCreate"
+                                    placeholder="Preencha com a data de cadastro...">
+                            </div>
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Departamento</label>
+                                <select class="form-control" id="department">
+                                    <option value="Informatica">Informatica</option>
+                                    <option value="Logistica">Logistica</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="checkbox" class="form-check-input" id="acept">
+                                <label for="dateCreate" class="form-check-box">Aceite</label>
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Cadastrar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript">
+        function submit(name, dateCreate, department, acept) {
+            //POST, PUT, GET, DELETE -> VERBOS HTTP
+
+            const data = {
+                name: name,
+                dateCreate: dateCreate,
+                department: department,
+            }
+
+            fetch("https://localhost:7006/categories", {
+                method: "POST",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).then((response) => response.json())
+                .then((result) => {
+                    Swal.fire(
+                        'Sucesso',
+                        'Cadastro realizado com sucesso!',
+                        'success'
+                    )
+                })
+                .catch((error) => {
+                    Swal.fire(
+                        'Error 500',
+                        'Houve um erro ao cadastrar!',
+                        'error'
+                    )
+                })
+        }
+
+        function create() {
+            let name = document.getElementById("name").value;
+            let dateCreate = document.getElementById("dateCreate").value;
+            let department = document.getElementById("department").value;
+            let acept = document.getElementById("acept").checked;
+
+            let splitDate = dateCreate.split("-");
+            let year = splitDate[0];
+            let month = splitDate[1];
+            let day = splitDate[3];
+
+            let now = new Date();
+
+            let errors = [];
+            //verificar o nome completo
+            if (name.indexOf(" ") === -1) {
+                errors.push("Preencha o nome completo!");
+            }
+
+            if (now.getFullYear() !== parseInt(year)) {
+                errors.push("O ano tem que ser o ano atual!");
+            }
+
+            if (!acept) {
+                errors.push("Aceite os termos!");
+            }
+
+            if (errors.length == 0) {
+                submit(name, dateCreate, department, acept);
+            } else {
+                Swal.fire(
+                    'Preencha os dados corretamente!',
+                    errors.join("<br>"),
+                    'error'
+                )
+            }
+
+            return false;
+        }
+    </script>
+</body>
+
+</html>
